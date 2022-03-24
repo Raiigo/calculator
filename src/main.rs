@@ -9,8 +9,17 @@ fn main() {
     tree.insert_left(Value::Operand(12.0));
     tree.insert_right(Value::Operand(2.0));
 
-    let parsed_str = parse("2*(3+4)".to_owned());
+    // let mut expr = "".to_owned();
+    // std::io::stdin().read_line(&mut expr);
+
+    // println!("{}", expr);
+
+    let parsed_str = parse("((((2*(4+6))+((1-4)*5))))".to_owned());
     dbg!(parsed_str);
+}
+
+fn parse_v2(expr: String) -> Node {
+    Node::new(Value::Operand(2.0))
 }
 
 fn parse(expr: String) -> Node {
@@ -20,11 +29,33 @@ fn parse(expr: String) -> Node {
     while expr.starts_with('(') && expr.ends_with(')') { // We have to handle the case were we have a pair of parenthesis from the start to the end
         let old_expr = expr.clone(); // In case the parenthesis are not a pair, we keep track of the old expr
         expr = String::from(&expr[1..(expr.len() - 1)]); // We delete first and last parenthesis
-        if expr.find('(') > expr.find(')') { // If true, it means that the parenthesis that we deleted were not a pair, so we set back old expr
+        
+        let mut rollback: bool = false;
+        let mut opened_parenthesis_indices: Vec<usize> = vec![];
+        let mut closed_parenthesis_indices: Vec<usize> = vec![];
+        for (i, c) in expr.char_indices() {
+            match c {
+                '(' => opened_parenthesis_indices.push(i),
+                ')' => closed_parenthesis_indices.push(i),
+                _ => {},
+            }
+        }
+        if opened_parenthesis_indices.len() == closed_parenthesis_indices.len() {
+            for i in 0..opened_parenthesis_indices.len() {
+                if opened_parenthesis_indices[i] > closed_parenthesis_indices[i] {
+                    rollback = true;
+                }
+            }
+        } else {
+            rollback = true;
+        }
+        if rollback {
             expr = old_expr;
             break;
         }
     }
+
+    println!("{}", expr);
 
     let mut tree: Node = Node::new(Value::Operand(0.0)); // Default case (shouldn't be returned except if expr is not well written)
 
