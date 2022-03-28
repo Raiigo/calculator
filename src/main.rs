@@ -9,12 +9,20 @@ fn main() {
     tree.insert_left(Value::Operand(12.0));
     tree.insert_right(Value::Operand(2.0));
 
-    // let mut expr = "".to_owned();
-    // std::io::stdin().read_line(&mut expr);
+    let mut expr = "".to_owned();
+    std::io::stdin().read_line(&mut expr);
+    expr = expr[0..expr.len() - 2].to_owned();
+    expr = expr.chars().map(|c| {
+        match c {
+            ' ' => "".to_owned(),
+            ',' => ".".to_owned(),
+            _ => format!("{}", c),
+        }
+    }).collect();
+    // expr = expr.replace(" ", "");
+    // expr = expr.replace(" ", "");
 
-    // println!("{}", expr);
-
-    let parsed_str = parse("((((2*(4+6))+((1-4)*5))))".to_owned());
+    let parsed_str = parse(expr);
     println!("Result is : {}", parsed_str.eval());
 }
 
@@ -22,7 +30,7 @@ fn parse(expr: String) -> Node {
 
     let mut expr = expr;
 
-    while expr.starts_with('(') && expr.ends_with(')') { // We have to handle the case were we have a pair of parenthesis from the start to the end
+    while expr.starts_with('(') && expr.ends_with(')') { // We have to handle the case where we have a pair of parenthesis from the start to the end
         let old_expr = expr.clone(); // In case the parenthesis are not a pair, we keep track of the old expr
         expr = String::from(&expr[1..(expr.len() - 1)]); // We delete first and last parenthesis
         
