@@ -21,6 +21,20 @@ impl Node {
     pub fn insert_right(&mut self, content: Value) {
         self.right_child = Some(Box::new(Node::new(content)));
     }
+
+    pub fn eval(&self) -> f64 {
+        let value = match &self.content {
+            Value::Operation(op) => match op {
+                Op::Add => self.left_child.as_ref().unwrap().eval() + self.right_child.as_ref().unwrap().eval(),
+                Op::Sub => &self.left_child.as_ref().unwrap().eval() - &self.right_child.as_ref().unwrap().eval(),
+                Op::Mul => &self.left_child.as_ref().unwrap().eval() * &self.right_child.as_ref().unwrap().eval(),
+                Op::Div => &self.left_child.as_ref().unwrap().eval() / &self.right_child.as_ref().unwrap().eval(),
+            },
+            Value::Operand(v) => *v,
+        };
+
+        return value;
+    }
 }
 
 #[derive(Debug)]

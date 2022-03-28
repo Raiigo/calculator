@@ -15,11 +15,7 @@ fn main() {
     // println!("{}", expr);
 
     let parsed_str = parse("((((2*(4+6))+((1-4)*5))))".to_owned());
-    dbg!(parsed_str);
-}
-
-fn parse_v2(expr: String) -> Node {
-    Node::new(Value::Operand(2.0))
+    println!("Result is : {}", parsed_str.eval());
 }
 
 fn parse(expr: String) -> Node {
